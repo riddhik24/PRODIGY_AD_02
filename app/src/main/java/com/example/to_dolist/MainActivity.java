@@ -21,8 +21,10 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
     private ArrayList<String> items;
     private ArrayAdapter<String> itemAdapter;
-    private Button button;
+    private Button button, updatebtn;
     private ListView listView;
+    Integer indexVal;
+    String item;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,15 +38,38 @@ public class MainActivity extends AppCompatActivity {
         });
 
         listView=findViewById(R.id.listView);
-        button=findViewById(R.id.btn);
+        button=findViewById(R.id.addbtn);
+        updatebtn= findViewById(R.id.updatebtn);
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addItem(v);
+        button.setOnClickListener(this::addItem);
+
+        items=new ArrayList<>();
+        itemAdapter= new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,items);
+        listView.setAdapter(itemAdapter);
+        setupListViewListener();
+
+        updatebtn.setOnClickListener(v -> {
+            EditText input=findViewById(R.id.ed1);
+            String itemText=input.getText().toString();
+
+            if(!(itemText.isEmpty())){
+                items.set(indexVal, itemText);
+                input.setText("");
+                itemAdapter.notifyDataSetChanged();
+            }else{
+                Toast.makeText(getApplicationContext(), "Please Update Task!", Toast.LENGTH_SHORT).show();
             }
         });
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                item=parent.getItemAtPosition(position).toString();
+                indexVal=position;
+                EditText input=findViewById(R.id.ed1);
+                input.setText(item);
+            }
+        });
         items=new ArrayList<>();
         itemAdapter= new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,items);
         listView.setAdapter(itemAdapter);
@@ -77,5 +102,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Please Enter Task!", Toast.LENGTH_SHORT).show();
         }
     }
+
 
 }
